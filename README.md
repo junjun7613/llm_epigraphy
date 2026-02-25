@@ -4,11 +4,10 @@ This repository contains tools for editing and validating epigraphic data extrac
 
 ## Online Editor
 
-Access the SPARQL-based editor here: [Gold Standard Editor (SPARQL)](https://your-username.github.io/inscription-editor/editor/gold_standard_editor_sparql.html)
+Access the SPARQL-based editor here: [Gold Standard Editor (SPARQL)](https://junjun7613.github.io/llm_epigraphy/editor/gold_standard_editor_sparql.html)
 
 ## Contents
 
-- **Lat-Epig-main/**: Scripts for scraping, processing, and converting epigraphic data to RDF
 - **editor/**: Web-based tools for editing and validating gold standard data
   - `gold_standard_editor_sparql.html`: Main SPARQL-based editor with place selection
   - `editor_script_sparql_v2.js`: JavaScript for SPARQL editor
@@ -24,7 +23,7 @@ Access the SPARQL-based editor here: [Gold Standard Editor (SPARQL)](https://you
 
 ## Usage
 
-1. Visit the [online editor](https://your-username.github.io/inscription-editor/editor/gold_standard_editor_sparql.html)
+1. Visit the [online editor](https://junjun7613.github.io/llm_epigraphy/editor/gold_standard_editor_sparql.html)
 2. Select a place from the dropdown
 3. Click "地名データ読込" to load inscriptions
 4. Navigate through inscriptions using ◀ ▶ buttons
@@ -35,6 +34,6 @@ Access the SPARQL-based editor here: [Gold Standard Editor (SPARQL)](https://you
 
 The editor connects to: `https://dydra.com/junjun7613/inscriptions_llm/sparql`
 
-## License
+## SPARQL Endpoint
 
-See [LICENSE](Lat-Epig-main/LICENSE) for details.
+The editor connects to: `https://dydra.com/junjun7613/inscriptions_llm/sparql`

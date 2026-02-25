@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Standard Editor (SPARQL版)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .controls input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #45a049;
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+        }
+
+        .btn-secondary:hover {
+            background: #0b7dda;
+        }
+
+        .btn-danger {
+            background: #f44336;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .panel {
+            background: #fafafa;
+            border-radius: 6px;
+            padding: 20px;
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+        }
+
+        .panel h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .inscription-info {
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .inscription-text {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        textarea {
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .btn-add {
+            background: #2196F3;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-add:hover {
+            background: #0b7dda;
+        }
+
+        .btn-remove {
+            background: #f44336;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-remove:hover {
+            background: #da190b;
+        }
+
+        .card {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .card-title {
+            font-weight: bold;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .nested-section {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .nested-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .nested-header h5 {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .nested-card {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .status-success {
+            background: #4CAF50;
+        }
+
+        .status-error {
+            background: #f44336;
+        }
+
+        .status-info {
+            background: #2196F3;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .pagination {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .pagination button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .pagination button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .pagination span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .sparql-status {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #1976d2;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gold Standard Editor (SPARQL版)</h1>
+        <p class="subtitle">碑文のLLM抽出データを検証・修正してgold standardデータを作成</p>
+
+        <div class="controls">
+            <label for="placeSelect" style="color: #333; font-weight: 500; margin-right: 10px;">地名選択:</label>
+            <select id="placeSelect" style="padding: 10px; border-radius: 4px; border: 1px solid #ddd; min-width: 300px; font-size: 14px;">
+                <option value="">読み込み中...</option>
+            </select>
+            <button class="btn" onclick="loadPlaceData()">📍 地名データ読込</button>
+
+            <button class="btn btn-secondary" onclick="saveData()">💾 保存</button>
+            <button class="btn btn-secondary" onclick="exportJSON()">📤 JSON出力</button>
+            <button class="btn btn-danger" onclick="clearAll()">🗑️ クリア</button>
+        </div>
+
+        <div class="sparql-status" id="sparqlStatus">
+            SPARQLエンドポイント: https://dydra.com/junjun7613/inscriptions_llm/sparql
+        </div>
+
+        <div class="pagination">
+            <button onclick="previousInscription()" id="btnPrev">◀ 前へ</button>
+            <span id="pageInfo">0 / 0</span>
+            <button onclick="nextInscription()" id="btnNext">次へ ▶</button>
+        </div>
+
+        <div class="main-content">
+            <!-- 左パネル: 碑文テキスト -->
+            <div class="panel">
+                <h2>📜 碑文テキスト</h2>
+                <div class="inscription-info">
+                    <div class="info-row">
+                        <div class="info-label">EDCS-ID:</div>
+                        <div class="info-value" id="edcsId">-</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">場所:</div>
+                        <div class="info-value" id="place">-</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">年代:</div>
+                        <div class="info-value" id="dating">-</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">データ取得:</div>
+                        <div class="info-value" id="dataSource">filtered_data</div>
+                    </div>
+                </div>
+                <div class="inscription-text" id="inscriptionText">
+                    地名を選択してデータを読み込んでください。
+
+【使い方】
+1. 地名選択ドロップダウンから地名を選択
+2. 「地名データ読込」ボタンをクリック
+3. 自動的にSPARQLエンドポイントから該当地名の全碑文データを取得
+4. ◀ ▶ ボタンでページ送り
+5. LLM抽出データを確認・修正
+6. 「JSON出力」で現在の碑文のgold_standardデータをエクスポート
+   （ファイル名: gold_standard_EDCS-ID.json）
+                </div>
+            </div>
+
+            <!-- 右パネル: 構造化データ入力 -->
+            <div class="panel">
+                <h2>✏️ 構造化データ入力</h2>
+
+                <!-- 人物セクション -->
+                <div class="form-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>👤 人物 (Persons)</h3>
+                        <button class="btn-add" onclick="addPerson()">+ 人物追加</button>
+                    </div>
+                    <div id="personsContainer"></div>
+                </div>
+
+                <!-- コミュニティセクション -->
+                <div class="form-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>🏛️ コミュニティ (Communities)</h3>
+                        <button class="btn-add" onclick="addCommunity()">+ コミュニティ追加</button>
+                    </div>
+                    <div id="communitiesContainer"></div>
+                </div>
+
+                <!-- 関係性セクション -->
+                <div class="form-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>🔗 関係性 (Relationships)</h3>
+                        <button class="btn-add" onclick="addRelationship()">+ 関係追加</button>
+                    </div>
+                    <div id="relationshipsContainer"></div>
+                </div>
+
+                <!-- 備考 -->
+                <div class="form-section">
+                    <h3>📝 備考 (Notes)</h3>
+                    <textarea id="notes" rows="4" placeholder="碑文に関する備考を入力..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="editor_script_sparql_v2.js"></script>
+</body>
+</html>

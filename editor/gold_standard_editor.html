@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>碑文Gold Standard エディター</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* 左パネル: 碑文テキスト */
+        .left-panel {
+            width: 40%;
+            background-color: #fff;
+            border-right: 2px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .left-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-bottom: 2px solid #34495e;
+        }
+
+        .left-header h2 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .inscription-info {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .inscription-info label {
+            font-weight: 600;
+            color: #ecf0f1;
+        }
+
+        .inscription-info span {
+            color: #bdc3c7;
+        }
+
+        .inscription-text {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            background-color: #fafafa;
+        }
+
+        /* 右パネル: データ入力フォーム */
+        .right-panel {
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            overflow: hidden;
+        }
+
+        .right-header {
+            background-color: #27ae60;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .right-header h2 {
+            font-size: 18px;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: white;
+        }
+
+        .pagination button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            background-color: #1e8449;
+            color: white;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background-color: #145a32;
+        }
+
+        .pagination button:disabled {
+            background-color: #7dcea0;
+            cursor: not-allowed;
+        }
+
+        .pagination span {
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .btn-save {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-load {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-load:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-export {
+            background-color: #e67e22;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background-color: #d35400;
+        }
+
+        .form-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .section {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .section-header h3 {
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .btn-add {
+            background-color: #27ae60;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn-add:hover {
+            background-color: #229954;
+        }
+
+        .btn-remove {
+            background-color: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-left: 10px;
+        }
+
+        .btn-remove:hover {
+            background-color: #c0392b;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .person-card,
+        .career-card,
+        .benefaction-card,
+        .community-card,
+        .relationship-card {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .card-header h4 {
+            color: #495057;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nested-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+
+        .nested-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .nested-header h5 {
+            color: #6c757d;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .help-text {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        /* スクロールバーのスタイル */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .status-success {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .status-error {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="status-message" id="statusMessage"></div>
+
+    <div class="container">
+        <!-- 左パネル: 碑文テキスト -->
+        <div class="left-panel">
+            <div class="left-header">
+                <h2>碑文テキスト</h2>
+                <div class="inscription-info">
+                    <label>EDCS ID:</label>
+                    <span id="edcsId">-</span>
+                    <label>場所:</label>
+                    <span id="place">-</span>
+                    <label>年代:</label>
+                    <span id="dating">-</span>
+                </div>
+            </div>
+            <div class="inscription-text" id="inscriptionText">filtered_dataフォルダ内のJSONファイルを読み込んでください。
+
+【使い方】
+1. 「JSON読込」ボタンをクリック
+2. filtered_data内の都市別フォルダからJSONファイルを選択
+3. ◀ ▶ ボタンでページ送り
+4. 碑文ごとにデータを編集・保存
+5. 「JSON出力」で全碑文のgold_standardデータを含むJSONをエクスポート
+            </div>
+        </div>
+
+        <!-- 右パネル: データ入力フォーム -->
+        <div class="right-panel">
+            <div class="right-header">
+                <h2>構造化データ入力</h2>
+                <div class="pagination">
+                    <button onclick="previousInscription()" id="btnPrev">◀ 前へ</button>
+                    <span id="pageInfo">0 / 0</span>
+                    <button onclick="nextInscription()" id="btnNext">次へ ▶</button>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-load" onclick="loadJSON()">JSON読込</button>
+                    <button class="btn btn-save" onclick="saveData()">保存</button>
+                    <button class="btn btn-export" onclick="exportJSON()">JSON出力</button>
+                </div>
+            </div>
+
+            <div class="form-content">
+                <!-- 人物セクション -->
+                <div class="section">
+                    <div class="section-header">
+                        <h3>人物 (Persons)</h3>
+                        <button class="btn-add" onclick="addPerson()">+ 人物追加</button>
+                    </div>
+                    <div id="personsContainer"></div>
+                </div>
+
+                <!-- コミュニティセクション -->
+                <div class="section">
+                    <div class="section-header">
+                        <h3>コミュニティ/集団 (Communities)</h3>
+                        <button class="btn-add" onclick="addCommunity()">+ コミュニティ追加</button>
+                    </div>
+                    <div id="communitiesContainer"></div>
+                </div>
+
+                <!-- 関係性セクション -->
+                <div class="section">
+                    <div class="section-header">
+                        <h3>関係性 (Relationships)</h3>
+                        <button class="btn-add" onclick="addRelationship()">+ 関係性追加</button>
+                    </div>
+                    <div id="relationshipsContainer"></div>
+                </div>
+
+                <!-- 備考セクション -->
+                <div class="section">
+                    <div class="section-header">
+                        <h3>備考 (Notes)</h3>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="notes" rows="3" placeholder="その他の関連情報..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" style="display: none;" accept=".json" onchange="handleFileSelect(event)">
+
+    <script src="editor_script.js"></script>
+</body>
+</html>

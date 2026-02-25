@@ -1,0 +1,9 @@
+# Backup files
+*_backup.*
+
+# Template files
+*_template.*
+
+# Generated test data
+test_*.json
+sample_*.json
